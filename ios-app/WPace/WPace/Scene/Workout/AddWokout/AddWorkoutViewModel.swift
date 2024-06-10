@@ -1,5 +1,5 @@
 //
-//  CreateWorkoutViewModel.swift
+//  AddWorkoutViewModel.swift
 //  WPace
 //
 //  Created by Arthur Ruan on 17/05/24.
@@ -27,7 +27,7 @@ final class AddWorkoutViewModel: ObservableObject {
         
         let customWorkout = CustomWorkout(activity: .running,
                                           location: .outdoor,
-                                          displayName: "Linda",
+                                          displayName: "Corridinha leve",
                                           blocks: [block])
         let workout = WorkoutPlan(.custom(customWorkout))
         

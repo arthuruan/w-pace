@@ -1,5 +1,5 @@
 //
-//  CreateWorkoutView.swift
+//  AddWorkoutView.swift
 //  WPace
 //
 //  Created by Arthur Ruan on 17/05/24.
@@ -41,12 +41,14 @@ struct AddWorkoutView: View {
     @State private var warmupOptsIsOn: Bool = false
     @State private var warmupGoal: GoalType = GoalType.duration
     @State private var warmupDuration: TimeInterval = 0
-    @State private var warmupDistance: Float?
+    @State private var warmupDistance: Float = 0
     // Cooldwon opts
     @State private var cooldownOptsIsOn: Bool = false
     @State private var cooldownGoal: GoalType = GoalType.duration
     @State private var cooldownDuration: TimeInterval = 0
-    @State private var cooldownDistance: Float?
+    @State private var cooldownDistance: Float = 0
+    
+    @FocusState private var fieldIsFocused: Bool
     
     let formatter: NumberFormatter = {
         let formatter = NumberFormatter()
@@ -56,104 +58,117 @@ struct AddWorkoutView: View {
     
     var body: some View {
         NavigationView {
-            VStack {
-                HStack {
-                    Button("Cancel") {
-                        isShowCreateWorkoutView = false
-                    }.foregroundColor(.wpPrimary)
-                    Spacer()
-                    Text("New Wokout")
-                        .font(.headline)
-                    Spacer()
-                    Button("Add") {
-                        Task {
-                            await viewModel.scheduleWorkout()
+            ZStack {
+                VStack {
+                    HStack {
+                        Button("Cancel") {
                             isShowCreateWorkoutView = false
-                        }
-                    }.foregroundColor(.wpPrimary)
-                }.padding()
-                Spacer()
-                Form {
-                    TextField("Workout Title", text: $displayName)
-                    DatePicker(
-                        "Date",
-                        selection: $workoutDate,
-                        in: Date()...,
-                        displayedComponents: [.date]
-                    )
-                    .accentColor(.wpPrimary)
-                    .datePickerStyle(.automatic)
-                    
-                    Section("Activity") {
-                        Picker("Type", selection: $activity) {
-                            ForEach(Activity.allCases, id: \.self) { activity in
-                                Text(activity.rawValue.capitalized)
+                        }.foregroundColor(.wpPrimary)
+                        Spacer()
+                        Text("New Wokout")
+                            .font(.headline)
+                        Spacer()
+                        Button("Add") {
+                            Task {
+                                await viewModel.scheduleWorkout()
+                                isShowCreateWorkoutView = false
                             }
-                        }
-                        Picker("Location", selection: $location) {
-                            ForEach(Location.allCases, id: \.self) { location in
-                                Text(location.rawValue.capitalized)
-                            }
-                        }
-                    }
-                    Section("Warmup") {
-                        Toggle(isOn: $warmupOptsIsOn) {
-                            Text("Warmup")
-                        }
-                        if warmupOptsIsOn {
-                            Picker("Goal", selection: $warmupGoal) {
-                                ForEach(GoalType.allCases, id: \.self) { goal in
-                                    Text(goal.rawValue.capitalized)
+                        }.foregroundColor(.wpPrimary)
+                    }.padding()
+                    Spacer()
+                    Form {
+                        TextField("Workout Title", text: $displayName).focused($fieldIsFocused)
+                        DatePicker(
+                            "Date",
+                            selection: $workoutDate,
+                            in: Date()...,
+                            displayedComponents: [.date]
+                        )
+                        .accentColor(.wpPrimary)
+                        .datePickerStyle(.automatic)
+                        
+                        Section("Activity") {
+                            Picker("Type", selection: $activity) {
+                                ForEach(Activity.allCases, id: \.self) { activity in
+                                    Text(activity.rawValue.capitalized)
                                 }
                             }
-                            switch(warmupGoal) {
-                            case .duration:
-                                TimerPicker(timeInterval: $warmupDuration, title: "Duration", columnType: .minutes)
-                            case .distance:
-                                LabeledContent {
-                                    TextField("-", value: $warmupDistance, formatter: formatter)
-                                        .keyboardType(.decimalPad)
-                                        .multilineTextAlignment(.trailing)
-                                } label: {
-                                    Text("Distance (km)")
-                                }
-                            case .open:
-                                EmptyView()
-                            }
-                        }
-                    }
-                    Section("Blocks") {
-                        Button("Add Workout Block") {}.foregroundColor(.wpPrimary)
-                    }
-                    Section("Cooldown") {
-                        Toggle(isOn: $cooldownOptsIsOn) {
-                            Text("Cooldown")
-                        }
-                        if cooldownOptsIsOn {
-                            Picker("Goal", selection: $cooldownGoal) {
-                                ForEach(GoalType.allCases, id: \.self) { goal in
-                                    Text(goal.rawValue.capitalized)
+                            Picker("Location", selection: $location) {
+                                ForEach(Location.allCases, id: \.self) { location in
+                                    Text(location.rawValue.capitalized)
                                 }
                             }
-                            switch(cooldownGoal) {
-                            case .duration:
-                                TimerPicker(timeInterval: $cooldownDuration, title: "Duration", columnType: .minutes)
-                            case .distance:
-                                LabeledContent {
-                                    TextField("-", value: $cooldownDistance, formatter: formatter)
-                                        .keyboardType(.decimalPad)
-                                        .multilineTextAlignment(.trailing)
-                                } label: {
-                                    Text("Distance (km)")
+                        }
+                        Section("Warmup") {
+                            Toggle(isOn: $warmupOptsIsOn) {
+                                Text("Warmup")
+                            }
+                            if warmupOptsIsOn {
+                                Picker("Goal", selection: $warmupGoal) {
+                                    ForEach(GoalType.allCases, id: \.self) { goal in
+                                        Text(goal.rawValue.capitalized)
+                                    }
                                 }
-                            case .open:
-                                EmptyView()
+                                switch(warmupGoal) {
+                                case .duration:
+                                    TimerPicker(timeInterval: $warmupDuration, title: "Duration", columnType: .minutes)
+                                case .distance:
+                                    LabeledContent {
+                                        TextField("-", value: $warmupDistance, formatter: formatter)
+                                            .keyboardType(.decimalPad)
+                                            .multilineTextAlignment(.trailing)
+                                            .focused($fieldIsFocused)
+                                    } label: {
+                                        Text("Distance (km)")
+                                    }
+                                case .open:
+                                    EmptyView()
+                                }
+                            }
+                        }
+                        Section("Blocks") {
+                            Button("Add Workout Block") {}.foregroundColor(.wpPrimary)
+                        }
+                        Section("Cooldown") {
+                            Toggle(isOn: $cooldownOptsIsOn) {
+                                Text("Cooldown")
+                            }
+                            if cooldownOptsIsOn {
+                                Picker("Goal", selection: $cooldownGoal) {
+                                    ForEach(GoalType.allCases, id: \.self) { goal in
+                                        Text(goal.rawValue.capitalized)
+                                    }
+                                }
+                                switch(cooldownGoal) {
+                                case .duration:
+                                    TimerPicker(timeInterval: $cooldownDuration, title: "Duration", columnType: .minutes)
+                                case .distance:
+                                    LabeledContent {
+                                        TextField("-", value: $cooldownDistance, formatter: formatter)
+                                            .keyboardType(.decimalPad)
+                                            .multilineTextAlignment(.trailing)
+                                            .focused($fieldIsFocused)
+                                    } label: {
+                                        Text("Distance (km)")
+                                    }
+                                case .open:
+                                    EmptyView()
+                                }
                             }
                         }
                     }
                 }
             }
-        }.sheet(isPresented: .constant(false)) {
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") {
+                       fieldIsFocused = false
+                    }.foregroundColor(.wpPrimary)
+                 }
+            }
+        }
+        .sheet(isPresented: .constant(false)) {
             HStack {
                 Text("Add Workout Block")
             }

@@ -40,6 +40,6 @@ final class HomeViewModel: ObservableObject {
     
     func deleteWorkoutPlan(scheduledWorkout: ScheduledWorkoutPlan) async {
         await WorkoutScheduler.shared.remove(scheduledWorkout.plan, at: scheduledWorkout.date)
-        await fetchWorkouts()
+//        await fetchWorkouts()
     }
 }
