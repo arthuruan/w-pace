@@ -25,6 +25,8 @@ struct NewRoutineView: View {
     @ObservedObject var viewModel = NewRoutineViewModel()
     @Binding var isShowNewRoutineView: Bool
     
+    @State private var wType: WType = .standard
+    
     @State private var displayName: String = ""
     @State private var workoutDate: Date = Date.now
     @State private var activity: Activity = Activity.running
@@ -65,17 +67,31 @@ struct NewRoutineView: View {
                                 }
                             }
                         }
-                        Section("Blocks") {
-                            Button("Add Workout Block") {
-                                viewModel.isShowNewWorkoutBlockView = true
-                            }.foregroundColor(.wpPrimary)
+                        // TODO: List recovery, blocks and cooldown
+                        Section("Add Intervals") {
+                            List {
+                                HStack {
+                                    Text("Warmup").onTapGesture { 
+                                        wType = .warmup
+                                        viewModel.isShowNewWorkoutView = true
+                                    }
+                                    Spacer()
+                                    Text("Block").onTapGesture {
+                                        viewModel.isShowNewWorkoutBlockView = true
+                                    }.foregroundStyle(.wpPrimary)
+                                    Spacer()
+                                    Text("Cooldown").onTapGesture {
+                                        wType = .cooldown
+                                        viewModel.isShowNewWorkoutView = true
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
-                    Spacer()
                     Button("Done") {
                        fieldIsFocused = false
                     }.foregroundColor(.wpPrimary)
@@ -83,6 +99,7 @@ struct NewRoutineView: View {
             }
         }
         .navigationTitle("New Routine")
+        .toolbarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button("Done") {
@@ -90,13 +107,16 @@ struct NewRoutineView: View {
                         await viewModel.scheduleWorkout()
                         isShowNewRoutineView = false
                     }
-                }.foregroundColor(.wpPrimary)
+                }.foregroundColor(.wpPrimary).bold()
             }
         }
-        .toolbarTitleDisplayMode(.inline)
         .sheet(isPresented: $viewModel.isShowNewWorkoutBlockView) {
             NewWorkoutBlockView(isShowNewWorkoutBlockView: $viewModel.isShowNewWorkoutBlockView)
         }
+        .sheet(isPresented: $viewModel.isShowNewWorkoutView) {
+            NewWorkoutView(isShowNewWorkoutView: $viewModel.isShowNewWorkoutView, aaa: $wType)
+        }
+        
     }
 }
 

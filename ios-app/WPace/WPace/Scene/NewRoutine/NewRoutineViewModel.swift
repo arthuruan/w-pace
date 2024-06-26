@@ -12,6 +12,7 @@ import WorkoutKit
 
 final class NewRoutineViewModel: ObservableObject {
     @Published var isShowNewWorkoutBlockView = false
+    @Published var isShowNewWorkoutView = false
     
     func scheduleWorkout() async {
         var tempoStep = IntervalStep(.work)

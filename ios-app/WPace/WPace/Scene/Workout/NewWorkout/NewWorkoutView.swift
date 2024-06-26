@@ -7,24 +7,32 @@
 
 import SwiftUI
 
-enum DurationType: String, CaseIterable, Identifiable {
-    var id: String { self.rawValue }
-    
-    case distance
-    case time
+// TODO: change this name
+enum WType {
+    case warmup
+    case cooldown
+    case standard
 }
 
-enum TargetType: String, CaseIterable, Identifiable {
-    var id: String { self.rawValue }
 
-    case pace
-    case heartRate
+func getNavigationTitle(wType: WType) -> String {
+    switch (wType) {
+    case .cooldown:
+        return "New Cooldwon"
+    case .standard:
+        return "New Workout"
+    case .warmup:
+        return "New Warmup"
+    }
 }
 
 struct NewWorkoutView: View {
     @Binding var isShowNewWorkoutView: Bool
+    // TODO: change this name
+    @Binding var aaa: WType
     
-    @State private var durationType: DurationType = DurationType.distance
+    @State private var type: WorkoutType = .workout
+    @State private var durationType: DurationType = .distance
     @State private var duration: TimeInterval = 10
     @State private var distance: Float = 1
     @State private var targetType: TargetType = TargetType.pace
@@ -43,8 +51,18 @@ struct NewWorkoutView: View {
         NavigationStack {
             ZStack {
                 Form {
-                    Section {
-                        Picker("Duration Type", selection: $durationType) {
+                    if (aaa == .standard) {
+                        Section ("Workout") {
+                            Picker("Type", selection: $type) {
+                                ForEach(WorkoutType.allCases, id: \.self) { activity in
+                                    Text(activity.rawValue.capitalized)
+                                }
+                            }
+                        }
+                    }
+        
+                    Section ("Duration") {
+                        Picker("Type", selection: $durationType) {
                             ForEach(DurationType.allCases, id: \.self) { activity in
                                 Text(activity.rawValue.capitalized)
                             }
@@ -62,11 +80,9 @@ struct NewWorkoutView: View {
                                 Text("Duration (km)")
                             }
                         }
-                    
                     }
-                    
-                    Section {
-                        Picker("Target Type", selection: $targetType) {
+                    Section("Target") {
+                        Picker("Type", selection: $targetType) {
                             ForEach(TargetType.allCases, id: \.self) { activity in
                                 let text: String = activity == TargetType.heartRate ? "Heart Rate" : activity.rawValue.capitalized
                                 Text(text)
@@ -91,24 +107,24 @@ struct NewWorkoutView: View {
                     }
                 }
             }
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle(getNavigationTitle(wType: aaa))
             .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        isShowNewWorkoutView = false
+                    }.foregroundColor(.wpPrimary).bold()
+                }
                 ToolbarItemGroup(placement: .keyboard) {
-                    Spacer()
                     Button("Done") {
                         fieldIsFocused = false
-                    }.foregroundColor(.wpPrimary)
+                    }.foregroundColor(.wpPrimary).bold()
                  }
             }
         }
-        .navigationTitle("New Workout")
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button("Done") {
-                    Task {
-                        isShowNewWorkoutView = false
-                    }
-                }.foregroundColor(.wpPrimary)
-            }
-        }
     }
+}
+
+#Preview {
+    NewWorkoutView(isShowNewWorkoutView: .constant(false), aaa: .constant(WType.cooldown))
 }
