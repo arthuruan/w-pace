@@ -10,7 +10,8 @@ import WorkoutKit
 
 // TODO: Create form params here
 
-final class AddWorkoutViewModel: ObservableObject {
+final class NewRoutineViewModel: ObservableObject {
+    @Published var isShowNewWorkoutBlockView = false
     
     func scheduleWorkout() async {
         var tempoStep = IntervalStep(.work)

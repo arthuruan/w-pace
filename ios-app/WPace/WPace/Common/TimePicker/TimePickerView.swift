@@ -10,27 +10,39 @@ import SwiftUI
 public struct TimerPicker: View {
     var title: String
     var columnType: ColumnType
+    var pickerType: PickerType
+    var columnLabels: [String] = [" h", " m", " s"]
     @Binding var timeInterval: TimeInterval
     @State var isWheelActive: Bool = false
     
-    init(timeInterval: Binding<TimeInterval>, title: String, columnType: ColumnType) {
+    init(timeInterval: Binding<TimeInterval>, title: String, pickerType: PickerType = .standard, columnType: ColumnType = .minutes) {
         self._timeInterval = timeInterval
         self.title = title
         self.columnType = columnType
+        if pickerType == .pace {
+            self.columnType = .minutes
+            self.columnLabels = ["", "'", "\""]
+        }
+        self.pickerType = pickerType
     }
     public var body: some View {
         VStack {
             HStack {
                 Text(title)
                 Spacer()
-                Text(TimeInterval(timeInterval).convert())
+                Text(
+                    pickerType == .pace ?
+                        TimeInterval(timeInterval).convertPace() + " / km"
+                    :
+                        TimeInterval(timeInterval).convert()
+                )
             }
             .contentShape(Rectangle())
             .onTapGesture {
                 isWheelActive = !isWheelActive
             }
             if isWheelActive {
-                SetView(second: $timeInterval, columnType: columnType)
+                SetView(second: $timeInterval, columnType: columnType, columnLabels: self.columnLabels)
             }
         }
     }

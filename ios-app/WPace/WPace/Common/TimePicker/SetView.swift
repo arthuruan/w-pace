@@ -7,6 +7,11 @@
 
 import SwiftUI
 
+enum PickerType {
+    case standard
+    case pace
+}
+
 enum ColumnType {
     case hours
     case minutes
@@ -22,6 +27,7 @@ struct TimeIndexType {
 struct SetView: UIViewRepresentable {
     @Binding var second: TimeInterval
     var columnType: ColumnType = .hours
+    var columnLabels: [String] = ["h", "m", "s"]
 
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
@@ -72,28 +78,28 @@ struct SetView: UIViewRepresentable {
             case .hours:
                 dataList = [[], [], []]
                 for i in 0...23 {
-                    dataList[0].append("\(i) h")
+                    dataList[0].append("\(i) \(self.setView.columnLabels[0])")
                 }
                 for i in 0...59 {
-                    dataList[1].append("\(i) m")
+                    dataList[1].append("\(i) \(self.setView.columnLabels[1])")
                 }
                 for i in 0...59 {
-                    dataList[2].append("\(i) s")
+                    dataList[2].append("\(i) \(self.setView.columnLabels[2])")
                 }
                 break
             case .minutes:
                 dataList = [[], []]
                 for i in 0...59 {
-                    dataList[0].append("\(i) m")
+                    dataList[0].append("\(i) \(self.setView.columnLabels[1])")
                 }
                 for i in 0...59 {
-                    dataList[1].append("\(i) s")
+                    dataList[1].append("\(i) \(self.setView.columnLabels[2])")
                 }
                 break
             case .seconds:
                 dataList = [[]]
                 for i in 0...59 {
-                    dataList[0].append("\(i) s")
+                    dataList[0].append("\(i) \(self.setView.columnLabels[2])")
                 }
                 break
             }

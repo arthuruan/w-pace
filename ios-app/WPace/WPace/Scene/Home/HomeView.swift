@@ -25,12 +25,8 @@ struct HomeView: View {
     }
  
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(alignment: .leading) {
-                Text("Wednesday")
-                    .font(.subheadline)
-                    .padding(.leading, 16)
-                    .foregroundColor(.wpSubGray)
                 List {
                     ForEach($viewModel.workouts, id: \.self) { $workout in
                         VStack(alignment: .leading) {
@@ -56,22 +52,22 @@ struct HomeView: View {
                     }
                 }
             }
-            .padding(.top, -14)
-            .navigationTitle("Routine")
+            .navigationTitle("Routines")
             .toolbarTitleDisplayMode(.inlineLarge)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        viewModel.isShowCreateWorkoutView = true
+                        viewModel.isShowNewRoutineView = true
                     } label: {
                         Image("wp-button-icon").resizable().frame(width: 27, height: 27)
                     }
                 }
             }
-            .sheet(isPresented: $viewModel.isShowCreateWorkoutView) {
-                AddWorkoutView(isShowCreateWorkoutView: $viewModel.isShowCreateWorkoutView)
+            .navigationDestination(isPresented: $viewModel.isShowNewRoutineView) {
+                NewRoutineView(isShowNewRoutineView: $viewModel.isShowNewRoutineView)
             }
         }
+        .tint(.wpPrimary)
         .task {
             await viewModel.firstLoad()
         }

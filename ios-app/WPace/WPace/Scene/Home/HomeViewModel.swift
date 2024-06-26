@@ -13,9 +13,9 @@ import HealthKit
 final class HomeViewModel: ObservableObject {
     var authorizationState: WorkoutScheduler.AuthorizationState = .notDetermined
     @Published var workouts: [ScheduledWorkoutPlan] = []
-    @Published var isShowCreateWorkoutView = false {
+    @Published var isShowNewRoutineView = false {
         didSet {
-            if self.isShowCreateWorkoutView == false {
+            if self.isShowNewRoutineView == false {
                 Task {
                     await fetchWorkouts()
                 }
@@ -40,6 +40,5 @@ final class HomeViewModel: ObservableObject {
     
     func deleteWorkoutPlan(scheduledWorkout: ScheduledWorkoutPlan) async {
         await WorkoutScheduler.shared.remove(scheduledWorkout.plan, at: scheduledWorkout.date)
-//        await fetchWorkouts()
     }
 }

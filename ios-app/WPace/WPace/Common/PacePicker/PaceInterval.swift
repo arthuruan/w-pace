@@ -1,13 +1,13 @@
 //
-//  TimeInterval.swift
+//  PaceInterval.swift
 //  WPace
 //
-//  Created by Arthur Ruan on 19/05/24.
+//  Created by Arthur Ruan on 22/06/24.
 //
 
 import Foundation
 
-extension TimeInterval {
+struct PaceInterval: TimeInterval {
     func convert() -> String {
         let hours = Int(self) / 3600
         let minutes = (Int(self) % 3600) / 60
@@ -27,22 +27,6 @@ extension TimeInterval {
         
         return String("\(hrLabel) \(minLabel) \(secLabel)")
     }
-    
-    func convertPace() -> String {
-        let minutes = (Int(self) % 3600) / 60
-        let seconds = Int(self) % 60
-        
-        var minLabel = ""
-        var secLabel = ""
-        
-        if (minutes > 0) {
-            minLabel = "\(minutes)'"
-        }
-        secLabel = "\(seconds)\""
-        
-        return String("\(minLabel) \(secLabel)")
-    }
-    
     func toHour() -> Int {
         return Int(self) / 3600
     }
