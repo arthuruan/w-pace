@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CB479E522C2E2E8300EE3B9F /* WorkoutBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB479E512C2E2E8300EE3B9F /* WorkoutBlock.swift */; };
 		CB49FB192C270A89002E4749 /* NewWorkoutBlockViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB49FB182C270A89002E4749 /* NewWorkoutBlockViewModel.swift */; };
 		CB49FB212C286A88002E4749 /* NewWorkoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB49FB202C286A88002E4749 /* NewWorkoutView.swift */; };
 		CB49FB232C286A99002E4749 /* NewWorkoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB49FB222C286A99002E4749 /* NewWorkoutViewModel.swift */; };
@@ -46,6 +47,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		CB479E512C2E2E8300EE3B9F /* WorkoutBlock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutBlock.swift; sourceTree = "<group>"; };
 		CB49FB182C270A89002E4749 /* NewWorkoutBlockViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewWorkoutBlockViewModel.swift; sourceTree = "<group>"; };
 		CB49FB202C286A88002E4749 /* NewWorkoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewWorkoutView.swift; sourceTree = "<group>"; };
 		CB49FB222C286A99002E4749 /* NewWorkoutViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewWorkoutViewModel.swift; sourceTree = "<group>"; };
@@ -109,6 +111,7 @@
 			isa = PBXGroup;
 			children = (
 				CBD9B8762C2B928100F39523 /* Workout.swift */,
+				CB479E512C2E2E8300EE3B9F /* WorkoutBlock.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -373,6 +376,7 @@
 			files = (
 				CBDCDB412BF6CABD0058968B /* HomeView.swift in Sources */,
 				CBDCDB5D2BFA61C20058968B /* TimeInterval.swift in Sources */,
+				CB479E522C2E2E8300EE3B9F /* WorkoutBlock.swift in Sources */,
 				CB49FB192C270A89002E4749 /* NewWorkoutBlockViewModel.swift in Sources */,
 				CB49FB232C286A99002E4749 /* NewWorkoutViewModel.swift in Sources */,
 				CB49FB212C286A88002E4749 /* NewWorkoutView.swift in Sources */,
