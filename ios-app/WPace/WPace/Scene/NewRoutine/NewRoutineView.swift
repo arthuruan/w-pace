@@ -21,11 +21,17 @@ enum Location: String, CaseIterable, Identifiable {
     case unknown
 }
 
+let warmup: Workout = Workout(type: .recovery, durationType: .distance, duration: 5, targetType: .heartRate, low: 160, high: 180)
+let blocks: [WorkoutBlock] = [
+    WorkoutBlock(repetition: 3, workouts: workouts),
+    WorkoutBlock(repetition: 5, workouts: workouts)
+]
+
 struct NewRoutineView: View {
     @ObservedObject var viewModel = NewRoutineViewModel()
     @Binding var isShowNewRoutineView: Bool
     
-    @State private var wType: WType = .standard
+    @State private var navigationWorkoutType: NavigationWorkoutType = .standard
     
     @State private var displayName: String = ""
     @State private var workoutDate: Date = Date.now
@@ -67,12 +73,47 @@ struct NewRoutineView: View {
                                 }
                             }
                         }
+                        
                         // TODO: List recovery, blocks and cooldown
+                        Section("Intervals") {
+                            VStack(alignment: .leading) {
+                                Text("Warmup").bold()
+                                Text("for 5 min").font(.caption)
+                            }
+                            ForEach(blocks, id: \.self) { block in
+                                HStack(alignment: .center) {
+                                    VStack(alignment: .leading) {
+                                        HStack {
+                                            Text("Block 1").bold()
+                                        }
+                                        VStack(alignment: .leading) {
+                                            ForEach(block.workouts, id: \.self) { workout in
+                                                Text("\(workout.type.rawValue), for 5 min").font(.caption)
+                                            }
+                                        }
+                                    }
+                                    Spacer()
+                                    Text("x\(block.repetition)")
+                                        .font(.caption)
+                                        .bold()
+                                        .padding(6)
+                                        .background(.wpPrimary)
+                                        .cornerRadius(8)
+                                        .foregroundStyle(.black)
+                                }
+                              
+                            }
+                            VStack(alignment: .leading) {
+                                Text("Cooldown").bold()
+                                Text("for 5 min").font(.caption)
+                            }
+                        }
+                        
                         Section("Add Intervals") {
-                            List {
+                      
                                 HStack {
                                     Text("Warmup").onTapGesture { 
-                                        wType = .warmup
+                                        navigationWorkoutType = .warmup
                                         viewModel.isShowNewWorkoutView = true
                                     }
                                     Spacer()
@@ -81,11 +122,11 @@ struct NewRoutineView: View {
                                     }.foregroundStyle(.wpPrimary)
                                     Spacer()
                                     Text("Cooldown").onTapGesture {
-                                        wType = .cooldown
+                                        navigationWorkoutType = .cooldown
                                         viewModel.isShowNewWorkoutView = true
-                                    }
+                                    }.disabled(true).foregroundStyle(.gray) // TODO: move the color to a state that changes when its have the interval already
                                 }
-                            }
+                         
                         }
                     }
                 }
@@ -102,7 +143,7 @@ struct NewRoutineView: View {
         .toolbarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button("Done") {
+                Button("Add") {
                     Task {
                         await viewModel.scheduleWorkout()
                         isShowNewRoutineView = false
@@ -114,7 +155,7 @@ struct NewRoutineView: View {
             NewWorkoutBlockView(isShowNewWorkoutBlockView: $viewModel.isShowNewWorkoutBlockView)
         }
         .sheet(isPresented: $viewModel.isShowNewWorkoutView) {
-            NewWorkoutView(isShowNewWorkoutView: $viewModel.isShowNewWorkoutView, aaa: $wType)
+            NewWorkoutView(isShowNewWorkoutView: $viewModel.isShowNewWorkoutView, navigationWorkoutType: $navigationWorkoutType)
         }
         
     }

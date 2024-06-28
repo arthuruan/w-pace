@@ -31,20 +31,21 @@ struct NewWorkoutBlockView: View {
                                 in: 1...99)
                     }
                     
-                    Button("Add Workout") {
-                        viewModel.isShowNewWorkoutView = true
-                    }.foregroundColor(.wpPrimary)
-                    
                     Section{
                         ForEach(workouts, id: \.self) { workout in
-                            HStack {
-                                Text(workout.durationType.rawValue.capitalized)
+                            VStack(alignment: .leading) {
+                                Text(workout.type.rawValue.capitalized).bold()
+                                Text("for 5 min").font(.caption)
                             }
                         }
                     }
+                    
+                    Button("Add Workout") {
+                        viewModel.isShowNewWorkoutView = true
+                    }.foregroundColor(.wpPrimary)
                 }
             }
-            .navigationTitle("New Block")
+            .navigationTitle("Block")
             .toolbarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -54,9 +55,13 @@ struct NewWorkoutBlockView: View {
                 }
             }
             .navigationDestination(isPresented: $viewModel.isShowNewWorkoutView) {
-                NewWorkoutView(isShowNewWorkoutView: $viewModel.isShowNewWorkoutView, aaa: .constant(.standard))
+                NewWorkoutView(isShowNewWorkoutView: $viewModel.isShowNewWorkoutView, navigationWorkoutType: .constant(.standard))
             }
         }
     }
     
+}
+
+#Preview {
+    NewWorkoutBlockView(isShowNewWorkoutBlockView: .constant(false))
 }

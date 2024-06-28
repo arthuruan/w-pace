@@ -7,29 +7,27 @@
 
 import SwiftUI
 
-// TODO: change this name
-enum WType {
+enum NavigationWorkoutType {
     case warmup
     case cooldown
     case standard
 }
 
 
-func getNavigationTitle(wType: WType) -> String {
-    switch (wType) {
+func getNavigationTitle(type: NavigationWorkoutType) -> String {
+    switch (type) {
     case .cooldown:
-        return "New Cooldwon"
+        return "Cooldwon"
     case .standard:
-        return "New Workout"
+        return "Workout"
     case .warmup:
-        return "New Warmup"
+        return "Warmup"
     }
 }
 
 struct NewWorkoutView: View {
     @Binding var isShowNewWorkoutView: Bool
-    // TODO: change this name
-    @Binding var aaa: WType
+    @Binding var navigationWorkoutType: NavigationWorkoutType
     
     @State private var type: WorkoutType = .workout
     @State private var durationType: DurationType = .distance
@@ -51,7 +49,7 @@ struct NewWorkoutView: View {
         NavigationStack {
             ZStack {
                 Form {
-                    if (aaa == .standard) {
+                    if (navigationWorkoutType == .standard) {
                         Section ("Workout") {
                             Picker("Type", selection: $type) {
                                 ForEach(WorkoutType.allCases, id: \.self) { activity in
@@ -108,7 +106,7 @@ struct NewWorkoutView: View {
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
-            .navigationTitle(getNavigationTitle(wType: aaa))
+            .navigationTitle(getNavigationTitle(type: navigationWorkoutType))
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Done") {
@@ -126,5 +124,5 @@ struct NewWorkoutView: View {
 }
 
 #Preview {
-    NewWorkoutView(isShowNewWorkoutView: .constant(false), aaa: .constant(WType.cooldown))
+    NewWorkoutView(isShowNewWorkoutView: .constant(false), navigationWorkoutType: .constant(NavigationWorkoutType.cooldown))
 }
