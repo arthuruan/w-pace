@@ -21,11 +21,8 @@ enum Location: String, CaseIterable, Identifiable {
     case unknown
 }
 
-let warmup: Workout = Workout(type: .recovery, durationType: .distance, duration: 5, targetType: .heartRate, low: 160, high: 180)
-let blocks: [WorkoutBlock] = [
-    WorkoutBlock(repetition: 3, workouts: workouts),
-    WorkoutBlock(repetition: 5, workouts: workouts)
-]
+//let warmup: Workout = Workout(type: .recovery, durationType: .distance, duration: 5, targetType: .heartRate, low: 160, high: 180)
+
 
 struct NewRoutineView: View {
     @ObservedObject var viewModel = NewRoutineViewModel()
@@ -50,7 +47,7 @@ struct NewRoutineView: View {
         NavigationStack {
             ZStack {
                 VStack {
-                    Form {
+                    List {
                         TextField("Routine Title", text: $displayName).focused($fieldIsFocused)
                         DatePicker(
                             "Date",
@@ -74,48 +71,20 @@ struct NewRoutineView: View {
                             }
                         }
                         
-                        // TODO: List recovery, blocks and cooldown
-                        Section("Intervals") {
-                            VStack(alignment: .leading) {
-                                Text("Warmup").bold()
-                                Text("for 5 min").font(.caption)
-                            }
-                            ForEach(blocks, id: \.self) { block in
-                                HStack(alignment: .center) {
-                                    VStack(alignment: .leading) {
-                                        HStack {
-                                            Text("Block 1").bold()
-                                        }
-                                        VStack(alignment: .leading) {
-                                            ForEach(block.workouts, id: \.self) { workout in
-                                                Text("\(workout.type.rawValue), for 5 min").font(.caption)
-                                            }
-                                        }
-                                    }
-                                    Spacer()
-                                    Text("x\(block.repetition)")
-                                        .font(.caption)
-                                        .bold()
-                                        .padding(6)
-                                        .background(.wpPrimary)
-                                        .cornerRadius(8)
-                                        .foregroundStyle(.black)
-                                }
-                              
-                            }
-                            VStack(alignment: .leading) {
-                                Text("Cooldown").bold()
-                                Text("for 5 min").font(.caption)
+                        if(viewModel.warmup != nil || viewModel.blocks.count != 0 || viewModel.cooldown != nil) {
+                            Section("Intervals") {
+                                IntervalsView(warmup: $viewModel.warmup, blocks: $viewModel.blocks, cooldwon: $viewModel.cooldown)
                             }
                         }
                         
                         Section("Add Intervals") {
-                      
                                 HStack {
                                     Text("Warmup").onTapGesture { 
                                         navigationWorkoutType = .warmup
                                         viewModel.isShowNewWorkoutView = true
                                     }
+                                    .disabled(viewModel.warmup != nil)
+                                    .foregroundStyle(viewModel.warmup != nil ? .gray : .black)
                                     Spacer()
                                     Text("Block").onTapGesture {
                                         viewModel.isShowNewWorkoutBlockView = true
@@ -124,7 +93,9 @@ struct NewRoutineView: View {
                                     Text("Cooldown").onTapGesture {
                                         navigationWorkoutType = .cooldown
                                         viewModel.isShowNewWorkoutView = true
-                                    }.disabled(true).foregroundStyle(.gray) // TODO: move the color to a state that changes when its have the interval already
+                                    }
+                                    .disabled(viewModel.cooldown != nil)
+                                    .foregroundStyle(viewModel.cooldown != nil ? .gray : .black)
                                 }
                          
                         }
@@ -133,6 +104,7 @@ struct NewRoutineView: View {
             }
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
                     Button("Done") {
                        fieldIsFocused = false
                     }.foregroundColor(.wpPrimary)
@@ -152,10 +124,10 @@ struct NewRoutineView: View {
             }
         }
         .sheet(isPresented: $viewModel.isShowNewWorkoutBlockView) {
-            NewWorkoutBlockView(isShowNewWorkoutBlockView: $viewModel.isShowNewWorkoutBlockView)
+            NewWorkoutBlockView(newRoutineViewModel: viewModel, isShowNewWorkoutBlockView: $viewModel.isShowNewWorkoutBlockView)
         }
         .sheet(isPresented: $viewModel.isShowNewWorkoutView) {
-            NewWorkoutView(isShowNewWorkoutView: $viewModel.isShowNewWorkoutView, navigationWorkoutType: $navigationWorkoutType)
+            NewWorkoutView(newRoutineViewModel: viewModel, isShowNewWorkoutView: $viewModel.isShowNewWorkoutView, navigationWorkoutType: $navigationWorkoutType)
         }
         
     }

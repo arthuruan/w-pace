@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CB210C462C3059A80071037A /* IntervalsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB210C452C3059A80071037A /* IntervalsView.swift */; };
 		CB479E522C2E2E8300EE3B9F /* WorkoutBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB479E512C2E2E8300EE3B9F /* WorkoutBlock.swift */; };
 		CB49FB192C270A89002E4749 /* NewWorkoutBlockViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB49FB182C270A89002E4749 /* NewWorkoutBlockViewModel.swift */; };
 		CB49FB212C286A88002E4749 /* NewWorkoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB49FB202C286A88002E4749 /* NewWorkoutView.swift */; };
@@ -47,6 +48,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		CB210C452C3059A80071037A /* IntervalsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntervalsView.swift; sourceTree = "<group>"; };
 		CB479E512C2E2E8300EE3B9F /* WorkoutBlock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutBlock.swift; sourceTree = "<group>"; };
 		CB49FB182C270A89002E4749 /* NewWorkoutBlockViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewWorkoutBlockViewModel.swift; sourceTree = "<group>"; };
 		CB49FB202C286A88002E4749 /* NewWorkoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewWorkoutView.swift; sourceTree = "<group>"; };
@@ -98,6 +100,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CB210C442C3059950071037A /* Component */ = {
+			isa = PBXGroup;
+			children = (
+				CB210C452C3059A80071037A /* IntervalsView.swift */,
+			);
+			path = Component;
+			sourceTree = "<group>";
+		};
 		CB49FB1F2C286A75002E4749 /* NewWorkout */ = {
 			isa = PBXGroup;
 			children = (
@@ -139,6 +149,7 @@
 		CBDCDB112BF6C7D70058968B /* WPace */ = {
 			isa = PBXGroup;
 			children = (
+				CB210C442C3059950071037A /* Component */,
 				CBD9B8752C2B925200F39523 /* Model */,
 				CBDCDB3E2BF6C97B0058968B /* Common */,
 				CBDCDB3D2BF6C9300058968B /* Scene */,
@@ -376,6 +387,7 @@
 			files = (
 				CBDCDB412BF6CABD0058968B /* HomeView.swift in Sources */,
 				CBDCDB5D2BFA61C20058968B /* TimeInterval.swift in Sources */,
+				CB210C462C3059A80071037A /* IntervalsView.swift in Sources */,
 				CB479E522C2E2E8300EE3B9F /* WorkoutBlock.swift in Sources */,
 				CB49FB192C270A89002E4749 /* NewWorkoutBlockViewModel.swift in Sources */,
 				CB49FB232C286A99002E4749 /* NewWorkoutViewModel.swift in Sources */,

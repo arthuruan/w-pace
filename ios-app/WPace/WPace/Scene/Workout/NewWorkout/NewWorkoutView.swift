@@ -26,6 +26,7 @@ func getNavigationTitle(type: NavigationWorkoutType) -> String {
 }
 
 struct NewWorkoutView: View {
+    @StateObject var newRoutineViewModel: NewRoutineViewModel
     @Binding var isShowNewWorkoutView: Bool
     @Binding var navigationWorkoutType: NavigationWorkoutType
     
@@ -109,11 +110,24 @@ struct NewWorkoutView: View {
             .navigationTitle(getNavigationTitle(type: navigationWorkoutType))
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
+                    Button("Add") {
                         isShowNewWorkoutView = false
+                        
+                        switch navigationWorkoutType {
+                        case .warmup:
+                            newRoutineViewModel.addWarmup(_warmup: Workout(type: type, durationType: durationType, duration: duration, targetType: targetType, low: slowest, high: fastest))
+                        case .cooldown:
+                            newRoutineViewModel.addCooldown(_cooldown: Workout(type: type, durationType: durationType, duration: duration, targetType: targetType, low: slowest, high: fastest))
+                        case .standard:
+                            // TODO: add a block
+                            break
+                        }
+                        
+                        
                     }.foregroundColor(.wpPrimary).bold()
                 }
                 ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
                     Button("Done") {
                         fieldIsFocused = false
                     }.foregroundColor(.wpPrimary).bold()
@@ -124,5 +138,5 @@ struct NewWorkoutView: View {
 }
 
 #Preview {
-    NewWorkoutView(isShowNewWorkoutView: .constant(false), navigationWorkoutType: .constant(NavigationWorkoutType.cooldown))
+    NewWorkoutView(newRoutineViewModel: NewRoutineViewModel(), isShowNewWorkoutView: .constant(false), navigationWorkoutType: .constant(NavigationWorkoutType.cooldown))
 }

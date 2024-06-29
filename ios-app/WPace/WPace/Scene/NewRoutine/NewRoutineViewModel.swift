@@ -9,10 +9,24 @@ import SwiftUI
 import WorkoutKit
 
 // TODO: Create form params here
-
 final class NewRoutineViewModel: ObservableObject {
     @Published var isShowNewWorkoutBlockView = false
     @Published var isShowNewWorkoutView = false
+    @Published var warmup: Workout?
+    @Published var blocks: [WorkoutBlock] = []
+    @Published var cooldown: Workout?
+    
+    func appendBlock() {
+        blocks.append(WorkoutBlock(repetition: 3, workouts: workouts))
+    }
+    
+    func addWarmup(_warmup: Workout) {
+        warmup = _warmup
+    }
+    
+    func addCooldown(_cooldown: Workout) {
+        cooldown = _cooldown
+    }
     
     func scheduleWorkout() async {
         var tempoStep = IntervalStep(.work)

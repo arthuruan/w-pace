@@ -15,6 +15,7 @@ let workouts: [Workout] = [
 ]
 
 struct NewWorkoutBlockView: View {
+    @StateObject var newRoutineViewModel: NewRoutineViewModel
     @Binding var isShowNewWorkoutBlockView: Bool
     
     @ObservedObject var viewModel = NewWorkoutBlockViewModel()
@@ -49,13 +50,14 @@ struct NewWorkoutBlockView: View {
             .toolbarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
+                    Button("Add") {
                         isShowNewWorkoutBlockView = false
+                        newRoutineViewModel.appendBlock()
                     }.foregroundColor(.wpPrimary).bold()
                 }
             }
             .navigationDestination(isPresented: $viewModel.isShowNewWorkoutView) {
-                NewWorkoutView(isShowNewWorkoutView: $viewModel.isShowNewWorkoutView, navigationWorkoutType: .constant(.standard))
+                NewWorkoutView(newRoutineViewModel: newRoutineViewModel,isShowNewWorkoutView: $viewModel.isShowNewWorkoutView, navigationWorkoutType: .constant(.standard))
             }
         }
     }
@@ -63,5 +65,5 @@ struct NewWorkoutBlockView: View {
 }
 
 #Preview {
-    NewWorkoutBlockView(isShowNewWorkoutBlockView: .constant(false))
+    NewWorkoutBlockView(newRoutineViewModel: NewRoutineViewModel(),isShowNewWorkoutBlockView: .constant(false))
 }
