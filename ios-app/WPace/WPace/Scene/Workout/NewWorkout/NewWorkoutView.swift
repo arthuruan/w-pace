@@ -27,6 +27,7 @@ func getNavigationTitle(type: NavigationWorkoutType) -> String {
 
 struct NewWorkoutView: View {
     @StateObject var newRoutineViewModel: NewRoutineViewModel
+    @StateObject var newWorkoutBlockViewModel: NewWorkoutBlockViewModel
     @Binding var isShowNewWorkoutView: Bool
     @Binding var navigationWorkoutType: NavigationWorkoutType
     
@@ -115,11 +116,11 @@ struct NewWorkoutView: View {
                         
                         switch navigationWorkoutType {
                         case .warmup:
-                            newRoutineViewModel.addWarmup(_warmup: Workout(type: type, durationType: durationType, duration: duration, targetType: targetType, low: slowest, high: fastest))
+                            newRoutineViewModel.setWarmup(_warmup: Workout(type: type, durationType: durationType, duration: duration, targetType: targetType, low: slowest, high: fastest))
                         case .cooldown:
-                            newRoutineViewModel.addCooldown(_cooldown: Workout(type: type, durationType: durationType, duration: duration, targetType: targetType, low: slowest, high: fastest))
+                            newRoutineViewModel.setCooldown(_cooldown: Workout(type: type, durationType: durationType, duration: duration, targetType: targetType, low: slowest, high: fastest))
                         case .standard:
-                            // TODO: add a block
+                            newWorkoutBlockViewModel.appendWorkout(workout: Workout(type: type, durationType: durationType, duration: duration, targetType: targetType, low: slowest, high: fastest))
                             break
                         }
                         
@@ -138,5 +139,10 @@ struct NewWorkoutView: View {
 }
 
 #Preview {
-    NewWorkoutView(newRoutineViewModel: NewRoutineViewModel(), isShowNewWorkoutView: .constant(false), navigationWorkoutType: .constant(NavigationWorkoutType.cooldown))
+    NewWorkoutView(
+        newRoutineViewModel: NewRoutineViewModel(),
+        newWorkoutBlockViewModel: NewWorkoutBlockViewModel(),
+        isShowNewWorkoutView: .constant(false),
+        navigationWorkoutType: .constant(NavigationWorkoutType.cooldown)
+    )
 }

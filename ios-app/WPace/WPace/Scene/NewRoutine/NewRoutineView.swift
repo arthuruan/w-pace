@@ -7,33 +7,13 @@
 
 import SwiftUI
 
-enum Activity: String, CaseIterable, Identifiable {
-    var id: String { self.rawValue }
-    
-    case running
-}
-
-enum Location: String, CaseIterable, Identifiable {
-    var id: String { self.rawValue }
-    
-    case outdoor
-    case indoor
-    case unknown
-}
-
-//let warmup: Workout = Workout(type: .recovery, durationType: .distance, duration: 5, targetType: .heartRate, low: 160, high: 180)
-
-
 struct NewRoutineView: View {
     @ObservedObject var viewModel = NewRoutineViewModel()
     @Binding var isShowNewRoutineView: Bool
     
     @State private var navigationWorkoutType: NavigationWorkoutType = .standard
     
-    @State private var displayName: String = ""
     @State private var workoutDate: Date = Date.now
-    @State private var activity: Activity = Activity.running
-    @State private var location: Location = Location.outdoor
     
     @FocusState private var fieldIsFocused: Bool
     
@@ -48,7 +28,7 @@ struct NewRoutineView: View {
             ZStack {
                 VStack {
                     List {
-                        TextField("Routine Title", text: $displayName).focused($fieldIsFocused)
+                        TextField("Routine Title", text: $viewModel.displayName).focused($fieldIsFocused)
                         DatePicker(
                             "Date",
                             selection: $workoutDate,
@@ -59,12 +39,12 @@ struct NewRoutineView: View {
                         .datePickerStyle(.automatic)
                         
                         Section("Activity") {
-                            Picker("Type", selection: $activity) {
+                            Picker("Type", selection: $viewModel.activity) {
                                 ForEach(Activity.allCases, id: \.self) { activity in
                                     Text(activity.rawValue.capitalized)
                                 }
                             }
-                            Picker("Location", selection: $location) {
+                            Picker("Location", selection: $viewModel.location) {
                                 ForEach(Location.allCases, id: \.self) { location in
                                     Text(location.rawValue.capitalized)
                                 }
@@ -120,14 +100,22 @@ struct NewRoutineView: View {
                         await viewModel.scheduleWorkout()
                         isShowNewRoutineView = false
                     }
-                }.foregroundColor(.wpPrimary).bold()
+                }
+                .disabled(!viewModel.fieldValidation())
+                .foregroundColor(viewModel.fieldValidation() ? .wpPrimary : .gray)
+                .bold(viewModel.fieldValidation())
             }
         }
         .sheet(isPresented: $viewModel.isShowNewWorkoutBlockView) {
             NewWorkoutBlockView(newRoutineViewModel: viewModel, isShowNewWorkoutBlockView: $viewModel.isShowNewWorkoutBlockView)
         }
         .sheet(isPresented: $viewModel.isShowNewWorkoutView) {
-            NewWorkoutView(newRoutineViewModel: viewModel, isShowNewWorkoutView: $viewModel.isShowNewWorkoutView, navigationWorkoutType: $navigationWorkoutType)
+            NewWorkoutView(
+                newRoutineViewModel: viewModel,
+                newWorkoutBlockViewModel: NewWorkoutBlockViewModel(),
+                isShowNewWorkoutView: $viewModel.isShowNewWorkoutView,
+                navigationWorkoutType: $navigationWorkoutType
+            )
         }
         
     }

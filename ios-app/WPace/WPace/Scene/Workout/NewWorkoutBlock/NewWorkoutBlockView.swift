@@ -15,25 +15,23 @@ let workouts: [Workout] = [
 ]
 
 struct NewWorkoutBlockView: View {
-    @StateObject var newRoutineViewModel: NewRoutineViewModel
-    @Binding var isShowNewWorkoutBlockView: Bool
-    
     @ObservedObject var viewModel = NewWorkoutBlockViewModel()
+    @StateObject var newRoutineViewModel: NewRoutineViewModel
     
-    @State private var repetition = 1
+    @Binding var isShowNewWorkoutBlockView: Bool
         
     var body: some View {
         NavigationStack {
             VStack {
                 Form {
                     Section {
-                        Stepper("Repeated x\(repetition)",
-                                value: $repetition,
+                        Stepper("Repeated x\(viewModel.repetition)",
+                                value: $viewModel.repetition,
                                 in: 1...99)
                     }
                     
                     Section{
-                        ForEach(workouts, id: \.self) { workout in
+                        ForEach(viewModel.workouts, id: \.self) { workout in
                             VStack(alignment: .leading) {
                                 Text(workout.type.rawValue.capitalized).bold()
                                 Text("for 5 min").font(.caption)
@@ -52,12 +50,23 @@ struct NewWorkoutBlockView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Add") {
                         isShowNewWorkoutBlockView = false
-                        newRoutineViewModel.appendBlock()
-                    }.foregroundColor(.wpPrimary).bold()
+                        newRoutineViewModel.appendBlock(
+                            block: WorkoutBlock(repetition: viewModel.repetition, workouts: viewModel.workouts)
+                        )
+                    }
+                    .disabled(viewModel.workouts.count == 0)
+                    .foregroundColor(viewModel.workouts.count == 0 ? .gray : .wpPrimary)
+                    .bold(viewModel.workouts.count != 0)
+
                 }
             }
             .navigationDestination(isPresented: $viewModel.isShowNewWorkoutView) {
-                NewWorkoutView(newRoutineViewModel: newRoutineViewModel,isShowNewWorkoutView: $viewModel.isShowNewWorkoutView, navigationWorkoutType: .constant(.standard))
+                NewWorkoutView(
+                    newRoutineViewModel: newRoutineViewModel,
+                    newWorkoutBlockViewModel: viewModel,
+                    isShowNewWorkoutView: $viewModel.isShowNewWorkoutView,
+                    navigationWorkoutType: .constant(.standard)
+                )
             }
         }
     }
