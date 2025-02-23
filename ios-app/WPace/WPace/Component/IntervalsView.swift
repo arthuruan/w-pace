@@ -7,32 +7,33 @@
 
 import SwiftUI
 
+// TODO: update this component to be more dynamic
 struct IntervalsView: View {
     @Binding var warmup: Workout?
-    @Binding var blocks: [WorkoutBlock]
+    @Binding var sessions: [WorkoutSession]
     @Binding var cooldwon: Workout?
     
     var body: some View {
         if (warmup != nil) {
             VStack(alignment: .leading) {
                 Text("Warmup").bold()
-                Text("for 5 min").font(.caption)
+                Text("for \(warmup!.formatWorkoutDuration())").font(.caption)
             }
         }
-        ForEach(blocks, id: \.self) { block in
+        ForEach(Array(sessions.enumerated()), id: \.element) { index, session in
             HStack(alignment: .center) {
                 VStack(alignment: .leading) {
                     HStack {
-                        Text("Block 1").bold()
+                        Text("Session \(index + 1)").bold()
                     }
                     VStack(alignment: .leading) {
-                        ForEach(block.workouts, id: \.self) { workout in
-                            Text("\(workout.type.rawValue), for 5 min").font(.caption)
+                        ForEach(session.workouts, id: \.self) { workout in
+                            Text("\(workout.type.rawValue), for \(workout.formatWorkoutDuration())").font(.caption)
                         }
                     }
                 }
                 Spacer()
-                Text("x\(block.repetition)")
+                Text("x\(session.repetition)")
                     .font(.caption)
                     .bold()
                     .padding(6)
@@ -45,7 +46,7 @@ struct IntervalsView: View {
         if (cooldwon != nil) {
             VStack(alignment: .leading) {
                 Text("Cooldown").bold()
-                Text("for 5 min").font(.caption)
+                Text("for \(cooldwon!.formatWorkoutDuration())").font(.caption)
             }
         }
     }

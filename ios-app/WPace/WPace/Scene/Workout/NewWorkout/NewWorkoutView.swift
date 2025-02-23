@@ -26,15 +26,14 @@ func getNavigationTitle(type: NavigationWorkoutType) -> String {
 }
 
 struct NewWorkoutView: View {
-    @StateObject var newRoutineViewModel: NewRoutineViewModel
-    @StateObject var newWorkoutBlockViewModel: NewWorkoutBlockViewModel
+    @EnvironmentObject var routineRepository: RoutineRepository
     @Binding var isShowNewWorkoutView: Bool
     @Binding var navigationWorkoutType: NavigationWorkoutType
     
-    @State private var type: WorkoutType = .workout
+    @State private var type: WorkoutType = .steady
     @State private var durationType: DurationType = .distance
-    @State private var duration: TimeInterval = 10
-    @State private var distance: Float = 1
+    @State private var durationTime: TimeInterval = 60
+    @State private var durationDistance: Double = 1
     @State private var targetType: TargetType = TargetType.pace
     @State private var slowest: TimeInterval = 360
     @State private var fastest: TimeInterval = 300
@@ -69,10 +68,10 @@ struct NewWorkoutView: View {
                         }
                         switch(durationType) {
                         case .time:
-                            TimerPicker(timeInterval: $duration, title: "Duration", columnType: .hours)
+                            TimerPicker(timeInterval: $durationTime, title: "Duration", columnType: .hours)
                         case .distance:
                             LabeledContent {
-                                TextField("-", value: $distance, formatter: formatter)
+                                TextField("-", value: $durationDistance, formatter: formatter)
                                     .keyboardType(.decimalPad)
                                     .multilineTextAlignment(.trailing)
                                     .focused($fieldIsFocused)
@@ -113,14 +112,18 @@ struct NewWorkoutView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Add") {
                         isShowNewWorkoutView = false
+                        var duration = Double(durationDistance)
+                        if (durationType == .time) {
+                            duration = Double(durationTime)
+                        }
                         
                         switch navigationWorkoutType {
                         case .warmup:
-                            newRoutineViewModel.setWarmup(_warmup: Workout(type: type, durationType: durationType, duration: duration, targetType: targetType, low: slowest, high: fastest))
+                            routineRepository.addWarmup(Workout(type: type, durationType: durationType, duration: duration, targetType: targetType, low: slowest, high: fastest))
                         case .cooldown:
-                            newRoutineViewModel.setCooldown(_cooldown: Workout(type: type, durationType: durationType, duration: duration, targetType: targetType, low: slowest, high: fastest))
+                            routineRepository.addCooldown(Workout(type: type, durationType: durationType, duration: duration, targetType: targetType, low: slowest, high: fastest))
                         case .standard:
-                            newWorkoutBlockViewModel.appendWorkout(workout: Workout(type: type, durationType: durationType, duration: duration, targetType: targetType, low: slowest, high: fastest))
+                            routineRepository.appendTempSessionWorkouts(Workout(type: type, durationType: durationType, duration: duration, targetType: targetType, low: slowest, high: fastest))
                             break
                         }
                         
@@ -140,8 +143,6 @@ struct NewWorkoutView: View {
 
 #Preview {
     NewWorkoutView(
-        newRoutineViewModel: NewRoutineViewModel(),
-        newWorkoutBlockViewModel: NewWorkoutBlockViewModel(),
         isShowNewWorkoutView: .constant(false),
         navigationWorkoutType: .constant(NavigationWorkoutType.cooldown)
     )

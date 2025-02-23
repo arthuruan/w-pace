@@ -10,6 +10,7 @@ import WorkoutKit
 
 struct HomeView: View {
     @ObservedObject var viewModel = HomeViewModel()
+    @StateObject private var routineRepository = RoutineRepository()
     
     let dateFormatter: RelativeDateTimeFormatter = {
         let formatter = RelativeDateTimeFormatter()
@@ -65,6 +66,8 @@ struct HomeView: View {
             }
             .navigationDestination(isPresented: $viewModel.isShowNewRoutineView) {
                 NewRoutineView(isShowNewRoutineView: $viewModel.isShowNewRoutineView)
+                    .environmentObject(routineRepository)
+
             }
         }
         .tint(.wpPrimary)

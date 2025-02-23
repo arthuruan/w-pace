@@ -8,8 +8,11 @@
 import SwiftUI
 
 struct NewRoutineView: View {
+    @EnvironmentObject var routineRepository: RoutineRepository
     @ObservedObject var viewModel = NewRoutineViewModel()
     @Binding var isShowNewRoutineView: Bool
+    @State var isShowNewWorkoutView = false
+    @State var isShowNewWorkoutSessionView = false
     
     @State private var navigationWorkoutType: NavigationWorkoutType = .standard
     
@@ -23,15 +26,19 @@ struct NewRoutineView: View {
         return formatter
     }()
     
+    func isRoutineValid() -> Bool {
+        return routineRepository.fieldValidation()
+    }
+    
     var body: some View {
         NavigationStack {
             ZStack {
                 VStack {
                     List {
-                        TextField("Routine Title", text: $viewModel.displayName).focused($fieldIsFocused)
+                        TextField("Routine Title", text: $routineRepository.displayName).focused($fieldIsFocused)
                         DatePicker(
                             "Date",
-                            selection: $workoutDate,
+                            selection: $routineRepository.workoutDate,
                             in: Date()...,
                             displayedComponents: [.date]
                         )
@@ -39,21 +46,21 @@ struct NewRoutineView: View {
                         .datePickerStyle(.automatic)
                         
                         Section("Activity") {
-                            Picker("Type", selection: $viewModel.activity) {
+                            Picker("Type", selection: $routineRepository.activity) {
                                 ForEach(Activity.allCases, id: \.self) { activity in
                                     Text(activity.rawValue.capitalized)
                                 }
                             }
-                            Picker("Location", selection: $viewModel.location) {
+                            Picker("Location", selection: $routineRepository.location) {
                                 ForEach(Location.allCases, id: \.self) { location in
                                     Text(location.rawValue.capitalized)
                                 }
                             }
                         }
                         
-                        if(viewModel.warmup != nil || viewModel.blocks.count != 0 || viewModel.cooldown != nil) {
+                        if(routineRepository.warmup != nil || routineRepository.sessions.count != 0 || routineRepository.cooldown != nil) {
                             Section("Intervals") {
-                                IntervalsView(warmup: $viewModel.warmup, blocks: $viewModel.blocks, cooldwon: $viewModel.cooldown)
+                                IntervalsView(warmup: $routineRepository.warmup, sessions: $routineRepository.sessions, cooldwon: $routineRepository.cooldown)
                             }
                         }
                         
@@ -61,21 +68,21 @@ struct NewRoutineView: View {
                                 HStack {
                                     Text("Warmup").onTapGesture { 
                                         navigationWorkoutType = .warmup
-                                        viewModel.isShowNewWorkoutView = true
+                                        isShowNewWorkoutView = true
                                     }
-                                    .disabled(viewModel.warmup != nil)
-                                    .foregroundStyle(viewModel.warmup != nil ? .gray : .black)
+                                    .disabled(routineRepository.warmup != nil)
+                                    .foregroundStyle(routineRepository.warmup != nil ? .gray : .primary)
                                     Spacer()
-                                    Text("Block").onTapGesture {
-                                        viewModel.isShowNewWorkoutBlockView = true
+                                    Text("Session").onTapGesture {
+                                        isShowNewWorkoutSessionView = true
                                     }.foregroundStyle(.wpPrimary)
                                     Spacer()
                                     Text("Cooldown").onTapGesture {
                                         navigationWorkoutType = .cooldown
-                                        viewModel.isShowNewWorkoutView = true
+                                        isShowNewWorkoutView = true
                                     }
-                                    .disabled(viewModel.cooldown != nil)
-                                    .foregroundStyle(viewModel.cooldown != nil ? .gray : .black)
+                                    .disabled(routineRepository.cooldown != nil)
+                                    .foregroundStyle(routineRepository.cooldown != nil ? .gray : .primary)
                                 }
                          
                         }
@@ -97,23 +104,22 @@ struct NewRoutineView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button("Add") {
                     Task {
-                        await viewModel.scheduleWorkout()
+                        await viewModel.scheduleWorkout(routineRepository: routineRepository)
+                        routineRepository.clear()
                         isShowNewRoutineView = false
                     }
                 }
-                .disabled(!viewModel.fieldValidation())
-                .foregroundColor(viewModel.fieldValidation() ? .wpPrimary : .gray)
-                .bold(viewModel.fieldValidation())
+                .disabled(!isRoutineValid())
+                .foregroundColor(isRoutineValid() ? .wpPrimary : .gray)
+                .bold(isRoutineValid())
             }
         }
-        .sheet(isPresented: $viewModel.isShowNewWorkoutBlockView) {
-            NewWorkoutBlockView(newRoutineViewModel: viewModel, isShowNewWorkoutBlockView: $viewModel.isShowNewWorkoutBlockView)
+        .sheet(isPresented: $isShowNewWorkoutSessionView) {
+            NewWorkoutSessionView(isShowNewWorkoutSessionView: $isShowNewWorkoutSessionView)
         }
-        .sheet(isPresented: $viewModel.isShowNewWorkoutView) {
+        .sheet(isPresented: $isShowNewWorkoutView) {
             NewWorkoutView(
-                newRoutineViewModel: viewModel,
-                newWorkoutBlockViewModel: NewWorkoutBlockViewModel(),
-                isShowNewWorkoutView: $viewModel.isShowNewWorkoutView,
+                isShowNewWorkoutView: $isShowNewWorkoutView,
                 navigationWorkoutType: $navigationWorkoutType
             )
         }
